@@ -113,7 +113,7 @@ class GladeClient(SlockyClient):
     def __setup_chat_window(self):
         """
         This is to set attributes on the chat window which can only be set
-        at run time (e.g. subtitle and username).
+        at run time (e.g. subtitle).
         """
         # Get chat window.
         self.__chat = self.__builder.get_object("chat_window")
@@ -121,10 +121,6 @@ class GladeClient(SlockyClient):
         # Set title
         headerbar = self.__builder.get_object("headerbar")
         headerbar.props.subtitle = "{0} on {1}".format(self.user_name, self.host)
-
-        # Set username
-        user_name_buffer = self.__builder.get_object("user_name")
-        user_name_buffer.set_text(self.user_name)
 
         self.__chat.show_all()
 
@@ -189,19 +185,6 @@ class GladeClient(SlockyClient):
     def on_key_press(self, widget, event):
         # If we hit enter.
         if event.string == "\r":
-            # If username buffer is focused change the username
-            user_name = self.__builder.get_object("user_name")
-            if user_name.is_focus():
-                old_username = self.user_name
-                self.user_name = user_name.get_text()
-                # Then make the text entry the focus
-                entry = self.__builder.get_object("chat_text")
-                entry.grab_focus()
-
-                # Annonce name change
-                self.send({"alert": "{0} is now known as {1}".format(old_username, self.user_name)})
-                return True
-
             self.on_post_msg()
             return True
 
@@ -278,8 +261,10 @@ class GladeClient(SlockyClient):
 
         (See the 'chat_window' gtk widget in the glade file)
         """
-        textbuf = self.__builder.get_object("chat_text")
-        msg = textbuf.get_text()
+        textbuf = self.__builder.get_object("entry_text_buffer")
+        start = textbuf.get_start_iter()
+        end = textbuf.get_end_iter()
+        msg = textbuf.get_text(start, end, True)
         textbuf.set_text("")
         self.send({
             "chat" : msg,
