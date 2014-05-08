@@ -1,0 +1,1 @@
+git+https://github.com/Aeva/slocky.git#egg=slocky.egg
