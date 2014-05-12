@@ -24,6 +24,7 @@
 import re
 import os
 import time
+import datetime
 import getpass
 
 from gi.repository import Gtk, GObject, Notify
@@ -213,6 +214,7 @@ class GladeClient(SlockyClient):
         purple = textbuf.create_tag(foreground="#8d0196")
         lime = textbuf.create_tag(foreground="#8dbb00")
         gray = textbuf.create_tag(foreground="#888888")
+        timestamp = textbuf.create_tag(foreground="#767675")
         action = text.startswith("/me ")
         if mode == "alert":
             msg = "-->{0}\n".format(text)
@@ -223,6 +225,11 @@ class GladeClient(SlockyClient):
                 tags += [italics]
                 msg = "** {0}".format(self.user_name)
             else:
+                # Add timestamp
+                timestamp_msg = datetime.datetime.now().strftime("[%H:%M] ")
+                textbuf.insert_with_tags(end, timestamp_msg, timestamp)
+                end = textbuf.get_end_iter()
+
                 msg = "{0}:".format(self.user_name)
             textbuf.insert_with_tags(end, msg, *tags)
             end = textbuf.get_end_iter()
@@ -239,6 +246,11 @@ class GladeClient(SlockyClient):
                 tags += [italics]
                 msg = "** {0}".format(name)
             else:
+                # Add timestamp
+                timestamp_msg = datetime.datetime.now().strftime("[%H:%M] ")
+                textbuf.insert_with_tags(end, timestamp_msg, timestamp)
+                end = textbuf.get_end_iter()
+
                 msg = "{0}:".format(name)
             textbuf.insert_with_tags(end, msg, *tags)
             end = textbuf.get_end_iter()
